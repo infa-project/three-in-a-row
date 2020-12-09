@@ -1,30 +1,44 @@
 import random
 import pygame
-
+from game_object import *
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-SIZE = 10
+
 
 
 class Board:
-    matrix = SIZE*[0]
+    SIZE = 0
+    width  =0
+    height  =0
+    matrix = SIZE * [0]
     for i in range(SIZE):
         matrix[i] = [0]*SIZE
-    def __init__(self):
-        for i in range(SIZE):
-            for j in range(SIZE):
-                self.matrix[i][j] = random.randint(0, 5)
+    def __init__(self, size, width, height):
+        self.width = width
+        self.height = height
+        self.SIZE = size;
+        self.matrix = self.SIZE*[0]
+        for i in range(self.SIZE):
+            self.matrix[i] = [0] * self.SIZE
+        for i in range(self.SIZE):
+            for j in range(self.SIZE):
+                self.matrix[i][j] = random.randint(0, 4)
 
-    def draw (self, screen,width, height):
+    def draw_init (self, screen):
         screen.fill(WHITE)
-        for i in range(SIZE-1):
-            pygame.draw.line(screen,BLACK, [(i+1)*width/SIZE,0],[(i+1)*width/SIZE,height])
-            pygame.draw.line(screen, BLACK, [0,(i + 1) * height / SIZE], [width, (i + 1) * height / SIZE])
+        for i in range(self.SIZE-1):
+            pygame.draw.line(screen, BLACK, [(i+1)*self.width/self.SIZE,0],[(i+1)*self.width/self.SIZE,self.height])
+            pygame.draw.line(screen, BLACK, [0,(i + 1) * self.height / self.SIZE], [self.width, (i + 1) * self.height / self.SIZE])
 
+    def draw(self, screen):
+        for i in range(self.SIZE):
+            for j in range(self.SIZE):
+                object = GameObject(round(self.width/(2*self.SIZE)+i*self.width/self.SIZE),round(self.height/(2*self.SIZE)+j*self.height/self.SIZE),round(0.9*self.width/(2*self.SIZE)),self.matrix[i][j])
+                object.draw(screen)
 
 
 

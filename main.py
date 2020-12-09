@@ -24,9 +24,9 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
-board = Board()
-board.draw(screen, WIDTH, HEIGHT)
-
+board = Board(SIZE, WIDTH, HEIGHT)
+board.draw_init(screen)
+board.draw(screen)
 # Цикл игры
 running = True
 while running:
