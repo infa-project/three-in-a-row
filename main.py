@@ -8,7 +8,7 @@ WIDTH = 500
 HEIGHT = 500
 FPS = 30
 
-SIZE = 10
+SIZE = 5
 
 # Задаем цвета
 WHITE = (255, 255, 255)
@@ -47,12 +47,14 @@ while running:
                 (x2, y2) = board.getcoords(event.pos[0], event.pos[1])
                 dist = abs(x-x2)+abs(y-y2)
                 if dist == 1:
-                    (board.matrix[int(x2)][int(y2)], board.matrix[int(x)][int(y)]) = (board.matrix[int(x)][int(y)],board.matrix[int(x2)][int(y2)])
+                    if board.goal(round(x),round(y),round(x2),round(y2)):
+                        board.draw(screen)
                     selected = 0
-                    board.draw(screen)
+
                 else:
                     x = x2
                     y = y2
+            board.draw(screen)
 
     # Обновление
 
