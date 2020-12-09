@@ -39,6 +39,11 @@ class Board:
             for j in range(self.SIZE):
                 object = GameObject(round(self.width/(2*self.SIZE)+i*self.width/self.SIZE),round(self.height/(2*self.SIZE)+j*self.height/self.SIZE),round(0.9*self.width/(2*self.SIZE)),self.matrix[i][j])
                 object.draw(screen)
+    def getcoords(self, x, y):
+        section_x = self.width/self.SIZE;
+        section_y = self.width/self.SIZE;
+        return (x//section_x,y//section_y)
+
 
 
 

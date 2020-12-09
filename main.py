@@ -29,6 +29,7 @@ board.draw_init(screen)
 board.draw(screen)
 # Цикл игры
 running = True
+selected = 0
 while running:
     # Держим цикл на правильной скорости
     clock.tick(FPS)
@@ -37,6 +38,21 @@ while running:
         # check for closing window
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if selected == 0:
+                selected = 1
+                (x, y) = board.getcoords(event.pos[0], event.pos[1])
+
+            if selected == 1:
+                (x2, y2) = board.getcoords(event.pos[0], event.pos[1])
+                dist = abs(x-x2)+abs(y-y2)
+                if dist == 1:
+                    (board.matrix[int(x2)][int(y2)], board.matrix[int(x)][int(y)]) = (board.matrix[int(x)][int(y)],board.matrix[int(x2)][int(y2)])
+                    selected = 0
+                    board.draw(screen)
+                else:
+                    x = x2
+                    y = y2
 
     # Обновление
 
