@@ -10,7 +10,7 @@ BLUE = (0, 0, 255)
 VIOLET = (80, 0, 80)
 YELLOW = (255, 128, 0)
 
-Colors = [RED,GREEN, BLUE, VIOLET, YELLOW]
+Colors = [RED,GREEN, BLUE, VIOLET, YELLOW, WHITE]
 
 class GameObject:
     def __init__(self, x, y, r, color):

@@ -15,7 +15,8 @@ class Board:
     width  =0
     height  =0
     matrix = SIZE * [0] # xранит цвета
-    matrix2= SIZE* [0] #хранит существование фишки
+    matrix2= SIZE* [0] #хранит существование фишки для поиска соседей
+    matrix_existed = SIZE*[0]
     candidates = []
     group = 0
     for i in range(SIZE):
@@ -69,9 +70,15 @@ class Board:
         neighboors = self.look_all_neighboors(x,y,self.matrix[x][y])
         print(" ")
         if  self.group>= 3 :
-            return True
+            for i in self.candidates:
+                self.matrix[i[0]][i[1]] = 5
+
+            self.candidates.clear()
             self.group = 1
+            return True
+
         else:
+            self.candidates.clear()
             self.group = 1
             return False
 
