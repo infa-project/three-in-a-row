@@ -24,8 +24,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
-
-
+board = Board()
+board.draw(screen, WIDTH, HEIGHT)
 
 # Цикл игры
 running = True
@@ -41,7 +41,6 @@ while running:
     # Обновление
 
     # Рендеринг
-    screen.fill(BLACK)
     # После отрисовки всего, переворачиваем экран
     pygame.display.flip()
 
