@@ -47,10 +47,9 @@ while running:
                 (x2, y2) = board.getcoords(event.pos[0], event.pos[1])
                 dist = abs(x-x2)+abs(y-y2)
                 if dist == 1:
-                    if board.goal(round(x),round(y),round(x2),round(y2)):
+                    if board.goal(round(x), round(y), round(x2), round(y2)):
                         board.draw(screen)
                     selected = 0
-
                 else:
                     x = x2
                     y = y2
@@ -59,7 +58,7 @@ while running:
     # Обновление
 
     # Рендеринг
-    # После отрисовки всего, переворачиваем экран
+    # После отрисовки всего обновляем экран
     pygame.display.flip()
 
 pygame.quit()
