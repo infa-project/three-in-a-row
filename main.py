@@ -8,7 +8,7 @@ WIDTH = 500
 HEIGHT = 500
 FPS = 30
 
-SIZE = 5
+SIZE = 10
 
 # Задаем цвета
 WHITE = (255, 255, 255)
@@ -29,30 +29,30 @@ board.draw_init(screen)
 board.draw(screen)
 # Цикл игры
 running = True
-selected = 0
+selected = False
+x_selected, y_selected = None, None
 while running:
     # Держим цикл на правильной скорости
     clock.tick(FPS)
-    # Ввод процесса (события)
+    # Ввод события
     for event in pygame.event.get():
         # check for closing window
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if selected == 0:
-                selected = 1
-                (x, y) = board.getcoords(event.pos[0], event.pos[1])
-
-            if selected == 1:
+            if not selected:
+                selected = True
+                (x_selected, y_selected) = board.getcoords(event.pos[0], event.pos[1])
+            else:
                 (x2, y2) = board.getcoords(event.pos[0], event.pos[1])
-                dist = abs(x-x2)+abs(y-y2)
+                dist = abs(x_selected - x2) + abs(y_selected - y2)
                 if dist == 1:
-                    if board.goal(round(x), round(y), round(x2), round(y2)):
+                    if board.goal(round(x_selected), round(y_selected), round(x2), round(y2)):
                         board.draw(screen)
-                    selected = 0
+                    selected = False
                 else:
-                    x = x2
-                    y = y2
+                    x_selected = x2
+                    y_selected = y2
             board.draw(screen)
 
     # Обновление
