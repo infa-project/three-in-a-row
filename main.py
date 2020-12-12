@@ -43,16 +43,23 @@ while running:
             if not selected:
                 selected = True
                 (x_selected, y_selected) = board.getcoords(event.pos[0], event.pos[1])
+                board.draw_selected(screen, x_selected, y_selected)
             else:
+                board.erase_selected(screen, x_selected, y_selected)
                 (x2, y2) = board.getcoords(event.pos[0], event.pos[1])
                 dist = abs(x_selected - x2) + abs(y_selected - y2)
                 if dist == 1:
                     if board.goal(round(x_selected), round(y_selected), round(x2), round(y2)):
                         board.draw(screen)
-                    selected = False
+                        selected = False
+                    else:
+                        x_selected = x2
+                        y_selected = y2
+                        board.draw_selected(screen, x_selected, y_selected)
                 else:
                     x_selected = x2
                     y_selected = y2
+                    board.draw_selected(screen, x_selected, y_selected)
             board.draw(screen)
 
     # Обновление
