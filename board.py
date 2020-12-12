@@ -112,3 +112,15 @@ class Board:
                     if self.matrix_of_colors[i][j] == WHITE:
                         self.matrix_of_colors[i][j], self.matrix_of_colors[i][j - 1] = \
                             self.matrix_of_colors[i][j - 1], self.matrix_of_colors[i][j]
+
+    def fill(self):
+        whites = []
+        for i in range(self.SIZE):
+            for j in range(self.SIZE):
+                if self.matrix_of_colors[i][j] == WHITE:
+                    whites.append((i, j))
+        for coord in whites:
+            self.matrix_of_colors[coord[0]][coord[1]] = random.choice(Colors)
+        while self.is_there_three_in_a_row():
+            for coord in whites:
+                self.matrix_of_colors[coord[0]][coord[1]] = random.choice(Colors)

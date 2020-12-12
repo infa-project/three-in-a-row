@@ -59,6 +59,7 @@ while running:
                             board.boom()
                             board.fall()
                             board.draw(screen)
+                        board.fill()
                         selected = False
                     else:
                         x_selected = x2
