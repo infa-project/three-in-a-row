@@ -19,31 +19,38 @@ class Board:
     width = 0
     height = 0
     matrix_of_colors = [[0 for _ in range(SIZE)] for _ in range(SIZE)]  # хранит цвета
-    matrix_existence = SIZE * [0]  # хранит существование фишки для поиска соседей
     candidates = []
-    group = 0
 
     def __init__(self, size, width, height):
         self.width = width
         self.height = height
         self.SIZE = size
         self.matrix_of_colors = self.SIZE * [0]
-        self.matrix_existence = self.SIZE * [0]
         for i in range(self.SIZE):
             self.matrix_of_colors[i] = [0] * self.SIZE
-            self.matrix_existence[i] = self.SIZE * [0]
         self.matrix_of_colors = [[random.choice(Colors) for _ in range(self.SIZE)] for _ in range(self.SIZE)]
         while self.is_there_three_in_a_row():
             self.matrix_of_colors = [[random.choice(Colors) for _ in range(self.SIZE)] for _ in range(self.SIZE)]
-        self.matrix_existence = [[1 for _ in range(self.SIZE)] for _ in range(self.SIZE)]
 
     def is_there_three_in_a_row(self):
         for i in range(self.SIZE):
             for j in range(self.SIZE - 2):
-                if self.matrix_of_colors[i][j] == self.matrix_of_colors[i][j + 1] == self.matrix_of_colors[i][j + 2] \
-                        or self.matrix_of_colors[j][i] == self.matrix_of_colors[j + 1][i] == self.matrix_of_colors[j + 2][i]:
+                if (self.matrix_of_colors[i][j] != WHITE and
+                    self.matrix_of_colors[i][j] == self.matrix_of_colors[i][j + 1] == self.matrix_of_colors[i][
+                        j + 2]) or (self.matrix_of_colors[j][i] != WHITE and self.matrix_of_colors[j][i] ==
+                                    self.matrix_of_colors[j + 1][i] == self.matrix_of_colors[j + 2][i]):
                     return True
         return False
+
+    def where_to_clear(self):
+        objects_to_clear = [[0 for _ in range(self.SIZE)] for _ in range(self.SIZE)]
+        for i in range(self.SIZE):
+            for j in range(self.SIZE - 2):
+                if self.matrix_of_colors[i][j] == self.matrix_of_colors[i][j + 1] == self.matrix_of_colors[i][j + 2]:
+                    objects_to_clear[i][j] = objects_to_clear[i][j + 1] = objects_to_clear[i][j + 2] = 1
+                if self.matrix_of_colors[j][i] == self.matrix_of_colors[j + 1][i] == self.matrix_of_colors[j + 2][i]:
+                    objects_to_clear[j][i] = objects_to_clear[j + 1][i] = objects_to_clear[j + 2][i] = 1
+        return objects_to_clear
 
     def draw_init(self, screen):
         screen.fill(WHITE)
@@ -76,62 +83,32 @@ class Board:
         h = round(self.height / self.SIZE)
         pygame.draw.rect(screen, WHITE, (x_coord + 1, y_coord + 1, w - 1, h - 1))
 
-    def getcoords(self, x, y):
+    def get_coords(self, x, y):
         section_x = self.width / self.SIZE
         section_y = self.width / self.SIZE
         return x // section_x, y // section_y
 
     def goal(self, x, y, x2, y2):
-        (self.matrix_of_colors[x][y], self.matrix_of_colors[x2][y2]) = (
-            self.matrix_of_colors[x2][y2], self.matrix_of_colors[x][y])
-        a = self.boom(x, y)
-        b = self.boom(x2, y2)
-        if a or b:
+        self.matrix_of_colors[x][y], self.matrix_of_colors[x2][y2] = \
+            self.matrix_of_colors[x2][y2], self.matrix_of_colors[x][y]
+        if self.is_there_three_in_a_row():
             return True
         else:
-            (self.matrix_of_colors[x2][y2], self.matrix_of_colors[x][y]) = \
-                (self.matrix_of_colors[x][y], self.matrix_of_colors[x2][y2])
+            self.matrix_of_colors[x2][y2], self.matrix_of_colors[x][y] = \
+                self.matrix_of_colors[x][y], self.matrix_of_colors[x2][y2]
             return False
 
-    def boom(self, x, y):
-        self.group = 1
-        self.candidates.append((x, y))
+    def boom(self):
+        to_clear = self.where_to_clear()
         for i in range(self.SIZE):
             for j in range(self.SIZE):
-                self.matrix_existence[i][j] = 1
-        self.look_all_neighbors(x, y, self.matrix_of_colors[x][y])
-        if self.group >= 3:
-            for i in self.candidates:
-                self.matrix_of_colors[i[0]][i[1]] = WHITE
-            self.candidates.clear()
-            self.group = 1
-            return True
-        else:
-            self.candidates.clear()
-            self.group = 1
-            return False
+                if to_clear[i][j] == 1:
+                    self.matrix_of_colors[i][j] = WHITE
 
-    def look_all_neighbors(self, x, y, color):
-        self.matrix_existence[x][y] = 0
-        if x != self.SIZE - 1:
-            if self.matrix_of_colors[x + 1][y] == color and self.matrix_existence[x + 1][y] != 0:
-                self.group += 1
-                self.candidates.append((x + 1, y))
-
-        if y != self.SIZE - 1:
-            if self.matrix_of_colors[x][y + 1] == color and self.matrix_existence[x][y + 1] != 0:
-                self.group += 1
-                self.look_all_neighbors(x, y + 1, color)
-                self.candidates.append((x, y + 1))
-
-        if x != 0:
-            if self.matrix_of_colors[x - 1][y] == color and self.matrix_existence[x - 1][y] != 0:
-                self.group += 1
-                self.look_all_neighbors(x - 1, y, color)
-                self.candidates.append((x - 1, y))
-
-        if y != 0:
-            if self.matrix_of_colors[x][y - 1] == color and self.matrix_existence[x][y - 1] != 0:
-                self.group += 1
-                self.look_all_neighbors(x, y - 1, color)
-                self.candidates.append((x, y - 1))
+    def fall(self):
+        for _ in range(self.SIZE):
+            for i in range(self.SIZE):
+                for j in range(1, self.SIZE):
+                    if self.matrix_of_colors[i][j] == WHITE:
+                        self.matrix_of_colors[i][j], self.matrix_of_colors[i][j - 1] = \
+                            self.matrix_of_colors[i][j - 1], self.matrix_of_colors[i][j]

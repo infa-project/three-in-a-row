@@ -42,15 +42,23 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if not selected:
                 selected = True
-                (x_selected, y_selected) = board.getcoords(event.pos[0], event.pos[1])
+                (x_selected, y_selected) = board.get_coords(event.pos[0], event.pos[1])
                 board.draw_selected(screen, x_selected, y_selected)
             else:
                 board.erase_selected(screen, x_selected, y_selected)
-                (x2, y2) = board.getcoords(event.pos[0], event.pos[1])
+                (x2, y2) = board.get_coords(event.pos[0], event.pos[1])
                 dist = abs(x_selected - x2) + abs(y_selected - y2)
-                if dist == 1:
+                if dist == 0:
+                    selected = False
+                elif dist == 1:
                     if board.goal(round(x_selected), round(y_selected), round(x2), round(y2)):
+                        board.boom()
+                        board.fall()
                         board.draw(screen)
+                        while board.is_there_three_in_a_row():
+                            board.boom()
+                            board.fall()
+                            board.draw(screen)
                         selected = False
                     else:
                         x_selected = x2
@@ -62,9 +70,6 @@ while running:
                     board.draw_selected(screen, x_selected, y_selected)
             board.draw(screen)
 
-    # Обновление
-
-    # Рендеринг
     # После отрисовки всего обновляем экран
     pygame.display.flip()
 
