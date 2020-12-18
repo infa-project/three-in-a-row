@@ -10,3 +10,6 @@ class GameObject:
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.r)
+
+if __name__ == "__main__":
+    print("This module is not for direct call!")
