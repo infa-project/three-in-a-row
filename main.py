@@ -52,6 +52,7 @@ while running:
                     selected = False
                 elif dist == 1:
                     if board.goal(round(x_selected), round(y_selected), round(x2), round(y2)):
+                        board.swap(screen, round(x_selected), round(y_selected), round(x2), round(y2))
                         board.boom()
                         board.fall()
                         board.draw(screen)
