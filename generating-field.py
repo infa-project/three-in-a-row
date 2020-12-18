@@ -20,3 +20,5 @@ def generate_field_list():
         field_list = [[choice(LIST_OF_COLORS) for _ in range(N)] for _ in range(N)]
     return field_list
 
+if __name__ == "__main__":
+    print("This module is not for direct call!")
