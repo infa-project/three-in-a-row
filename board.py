@@ -124,3 +124,6 @@ class Board:
         while self.is_there_three_in_a_row():
             for coord in whites:
                 self.matrix_of_colors[coord[0]][coord[1]] = random.choice(Colors)
+               
+if __name__ == "__main__":
+    print("This module is not for direct call!")
