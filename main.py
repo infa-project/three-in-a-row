@@ -54,12 +54,12 @@ while running:
                 elif dist == 1:
                     if board.goal(round(x_selected), round(y_selected), round(x2), round(y2)):
                         board.swap(screen, round(x_selected), round(y_selected), round(x2), round(y2))
-                        board.boom()
-                        board.fall()
+                        board.boom(screen)
+                        board.fall(screen)
                         board.draw(screen)
                         while board.is_there_three_in_a_row():
-                            board.boom()
-                            board.fall()
+                            board.boom(screen)
+                            board.fall(screen)
                             board.draw(screen)
                         board.fill()
                         selected = False
