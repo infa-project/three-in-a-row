@@ -97,21 +97,67 @@ class Board:
                 self.matrix_of_colors[x][y], self.matrix_of_colors[x2][y2]
             return False
 
-    def boom(self):
+    def boom(self, screen):
         to_clear = self.where_to_clear()
+        w = round(self.width / self.SIZE)
+        h = round(self.height / self.SIZE)
+        for t in range (10):
+            for j in range(self.SIZE):
+                for i in range(self.SIZE):
+                    if to_clear[i][j] == 1:
+                        x = round(i * self.width / self.SIZE)
+                        y = round(j * self.height / self.SIZE)
+                        pygame.draw.rect(screen, WHITE, (x + 1, y + 1, w - 1, h - 1))
+                        pygame.draw.circle(screen, self.matrix_of_colors[i][j],
+                            (x + 25, y + 25), round(22 * (1 - (t + 1)/10)))
+ 
+            pygame.display.flip()
+            pygame.time.wait(50)
+                        
+                        
         for i in range(self.SIZE):
             for j in range(self.SIZE):
                 if to_clear[i][j] == 1:
                     self.matrix_of_colors[i][j] = WHITE
 
-    def fall(self):
+    def fall(self, screen):
+        w = round(self.width / self.SIZE)
+        h = round(self.height / self.SIZE)
+        list_of_whites = []
+        for j in range(self.SIZE):
+            for i in range(self.SIZE):
+                if self.matrix_of_colors[i][j] == WHITE:
+                    list_of_whites.append([i,j])
+        list_of_whites.append([100, 100])
+        A = []
+        a = list_of_whites[0][0]
+        line = 0
+        length = 0
+        for t in list_of_whites:
+            if t[0] != a:
+                A.append([a, line, length])
+                length = 0
+                a = t[0]
+            line = t[1]
+            length+=1
+        for t in range(100):
+            for info in A:
+                for j in range (info[1] - info[2] + 1):
+                    x = round(info[0] * self.width / self.SIZE)
+                    y = round(j * self.height / self.SIZE)
+                    pygame.draw.rect(screen, WHITE, (x + 1, round(y + 50 * info[2] * t / 100), w - 1, h - 1))
+                    pygame.draw.circle(screen, self.matrix_of_colors[info[0]][j], (x + 25 , round(y + 25 + 50*info[2]*(t+1)/100)), 22)
+            self.draw_init(screen)
+            pygame.display.flip()
+            pygame.time.wait(3)
+
         for _ in range(self.SIZE):
             for i in range(self.SIZE):
                 for j in range(1, self.SIZE):
                     if self.matrix_of_colors[i][j] == WHITE:
                         self.matrix_of_colors[i][j], self.matrix_of_colors[i][j - 1] = \
                             self.matrix_of_colors[i][j - 1], self.matrix_of_colors[i][j]
-
+                                                 
     def fill(self):
         whites = []
         for i in range(self.SIZE):
@@ -131,20 +177,21 @@ class Board:
         y_coord2 = round(y2 * self.height / self.SIZE)
         w = round(self.width / self.SIZE)
         h = round(self.height / self.SIZE)
-        for i in range(10):
+        for i in range(100):
             self.draw_init(screen)
             pygame.draw.rect(screen, WHITE, (x_coord1 + 1, y_coord1 + 1, w - 1, h - 1))
             pygame.draw.rect(screen, WHITE, (x_coord2 + 1, y_coord2 + 1, w - 1, h - 1))
             pygame.draw.circle(screen, self.matrix_of_colors[x2][y2], (
-                round(((9 - i) * x_coord1 + (1 + i) * x_coord2) / 10) + 25,
-                round(((9 - i) * y_coord1 + (1 + i) * y_coord2) / 10) + 25), 22)
+                round(((99 - i) * x_coord1 + (1 + i) * x_coord2) / 100) + 25,
+                round(((99 - i) * y_coord1 + (1 + i) * y_coord2) / 100) + 25), 22)
             pygame.draw.circle(screen, self.matrix_of_colors[x1][y1], (
-                round(((1 + i) * x_coord1 + (9 - i) * x_coord2) / 10) + 25,
-                round(((1 + i) * y_coord1 + (9 - i) * y_coord2) / 10) + 25), 22)
+                round(((1 + i) * x_coord1 + (99 - i) * x_coord2) / 100) + 25,
+                round(((1 + i) * y_coord1 + (99 - i) * y_coord2) / 100) + 25), 22)
             pygame.display.flip()
-            pygame.time.wait(100)
+            pygame.time.wait(5)
         self.draw_init(screen)
 
 
 if __name__ == "__main__":
     print("This module is not for direct call!")
+
