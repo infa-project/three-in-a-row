@@ -21,6 +21,7 @@ BLUE = (0, 0, 255)
 pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen.fill(WHITE)
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 

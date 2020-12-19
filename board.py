@@ -53,7 +53,6 @@ class Board:
         return objects_to_clear
 
     def draw_init(self, screen):
-        screen.fill(WHITE)
         for i in range(self.SIZE - 1):
             pygame.draw.line(screen, BLACK, [(i + 1) * self.width / self.SIZE, 0],
                              [(i + 1) * self.width / self.SIZE, self.height])
@@ -124,8 +123,7 @@ class Board:
         while self.is_there_three_in_a_row():
             for coord in whites:
                 self.matrix_of_colors[coord[0]][coord[1]] = random.choice(Colors)
-               
-            
+
     def swap(self, screen, x1, y1, x2, y2):
         x_coord1 = round(x1 * self.width / self.SIZE)
         y_coord1 = round(y1 * self.height / self.SIZE)
@@ -134,13 +132,19 @@ class Board:
         w = round(self.width / self.SIZE)
         h = round(self.height / self.SIZE)
         for i in range(10):
+            self.draw_init(screen)
             pygame.draw.rect(screen, WHITE, (x_coord1 + 1, y_coord1 + 1, w - 1, h - 1))
             pygame.draw.rect(screen, WHITE, (x_coord2 + 1, y_coord2 + 1, w - 1, h - 1))
-            pygame.draw.circle(screen, self.matrix_of_colors[x2][y2], (round(((9-i)*x_coord1 + (1+i)*x_coord2)/10) + 25, round(((9-i)*y_coord1 + (1+i)*y_coord2)/10) + 25), 22)
-            pygame.draw.circle(screen, self.matrix_of_colors[x1][y1], (round(((1+i)*x_coord1 + (9-i)*x_coord2)/10) + 25, round(((1+i)*y_coord1 + (9-i)*y_coord2)/10) + 25), 22)
+            pygame.draw.circle(screen, self.matrix_of_colors[x2][y2], (
+                round(((9 - i) * x_coord1 + (1 + i) * x_coord2) / 10) + 25,
+                round(((9 - i) * y_coord1 + (1 + i) * y_coord2) / 10) + 25), 22)
+            pygame.draw.circle(screen, self.matrix_of_colors[x1][y1], (
+                round(((1 + i) * x_coord1 + (9 - i) * x_coord2) / 10) + 25,
+                round(((1 + i) * y_coord1 + (9 - i) * y_coord2) / 10) + 25), 22)
             pygame.display.flip()
             pygame.time.wait(100)
-        
-        
+        self.draw_init(screen)
+
+
 if __name__ == "__main__":
     print("This module is not for direct call!")
