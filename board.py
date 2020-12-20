@@ -7,7 +7,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-VIOLET = (80, 0, 80)
+VIOLET = (100, 0, 100)
 YELLOW = (255, 128, 0)
 LIGHT_BLUE = (130, 200, 255)
 
@@ -21,7 +21,7 @@ class Board:
     matrix_of_colors = [[0 for _ in range(SIZE)] for _ in range(SIZE)]  # хранит цвета
     candidates = []
 
-    def __init__(self, size, width, height):
+    def __init__(self, size, width, height, top_hollow):
         self.width = width
         self.height = height
         self.SIZE = size
@@ -31,6 +31,7 @@ class Board:
         self.matrix_of_colors = [[random.choice(Colors) for _ in range(self.SIZE)] for _ in range(self.SIZE)]
         while self.is_there_three_in_a_row():
             self.matrix_of_colors = [[random.choice(Colors) for _ in range(self.SIZE)] for _ in range(self.SIZE)]
+        self.top_hollow = top_hollow
 
     def is_there_three_in_a_row(self):
         for i in range(self.SIZE):
@@ -53,39 +54,39 @@ class Board:
         return objects_to_clear
 
     def draw_init(self, screen):
-        for i in range(self.SIZE - 1):
-            pygame.draw.line(screen, BLACK, [(i + 1) * self.width / self.SIZE, 0],
-                             [(i + 1) * self.width / self.SIZE, self.height])
-            pygame.draw.line(screen, BLACK, [0, (i + 1) * self.height / self.SIZE],
-                             [self.width, (i + 1) * self.height / self.SIZE])
+        for i in range(self.SIZE):
+            pygame.draw.line(screen, BLACK, [i * self.width / self.SIZE, self.top_hollow],
+                             [i * self.width / self.SIZE, self.height])
+            pygame.draw.line(screen, BLACK, [0, self.top_hollow + i * (self.height - self.top_hollow) / self.SIZE],
+                             [self.width, self.top_hollow + i * (self.height - self.top_hollow) / self.SIZE])
 
     def draw(self, screen):
         for i in range(self.SIZE):
             for j in range(self.SIZE):
                 obj = GameObject(round(self.width / (2 * self.SIZE) + i * self.width / self.SIZE),
-                                 round(self.height / (2 * self.SIZE) + j * self.height / self.SIZE),
+                                 round(self.top_hollow + (self.height - self.top_hollow) / (2 * self.SIZE) + j * (self.height - self.top_hollow) / self.SIZE),
                                  round(0.9 * self.width / (2 * self.SIZE)),
                                  self.matrix_of_colors[i][j])
                 obj.draw(screen)
 
     def draw_selected(self, screen, x, y):
         x_coord = round(x * self.width / self.SIZE)
-        y_coord = round(y * self.height / self.SIZE)
+        y_coord = round(self.top_hollow + y * (self.height - self.top_hollow) / self.SIZE)
         w = round(self.width / self.SIZE)
-        h = round(self.height / self.SIZE)
+        h = round((self.height - self.top_hollow) / self.SIZE)
         pygame.draw.rect(screen, LIGHT_BLUE, (x_coord + 1, y_coord + 1, w - 1, h - 1))
 
     def erase_selected(self, screen, x, y):
         x_coord = round(x * self.width / self.SIZE)
-        y_coord = round(y * self.height / self.SIZE)
+        y_coord = round(self.top_hollow + y * (self.height - self.top_hollow) / self.SIZE)
         w = round(self.width / self.SIZE)
-        h = round(self.height / self.SIZE)
+        h = round((self.height - self.top_hollow) / self.SIZE)
         pygame.draw.rect(screen, WHITE, (x_coord + 1, y_coord + 1, w - 1, h - 1))
 
     def get_coords(self, x, y):
         section_x = self.width / self.SIZE
-        section_y = self.width / self.SIZE
-        return x // section_x, y // section_y
+        section_y = (self.height - self.top_hollow) / self.SIZE
+        return x // section_x, (y - self.top_hollow) // section_y
 
     def goal(self, x, y, x2, y2):
         self.matrix_of_colors[x][y], self.matrix_of_colors[x2][y2] = \
@@ -100,34 +101,38 @@ class Board:
     def boom(self, screen):
         to_clear = self.where_to_clear()
         w = round(self.width / self.SIZE)
-        h = round(self.height / self.SIZE)
-        for t in range (10):
+        h = round((self.height - self.top_hollow) / self.SIZE)
+        for t in range(10):
             for j in range(self.SIZE):
                 for i in range(self.SIZE):
                     if to_clear[i][j] == 1:
                         x = round(i * self.width / self.SIZE)
-                        y = round(j * self.height / self.SIZE)
+                        y = round(self.top_hollow + j * (self.height - self.top_hollow) / self.SIZE)
                         pygame.draw.rect(screen, WHITE, (x + 1, y + 1, w - 1, h - 1))
                         pygame.draw.circle(screen, self.matrix_of_colors[i][j],
-                            (x + 25, y + 25), round(22 * (1 - (t + 1)/10)))
- 
+                                           (x + self.width // (2 * self.SIZE), y + (self.height - self.top_hollow) // (2 * self.SIZE)),
+                                           round(0.9 * self.width / (2 * self.SIZE) * (1 - (t + 1) / 10)))
+
             pygame.display.flip()
             pygame.time.wait(50)
-                        
-                        
+
+        s = 0
+        to_clear = self.where_to_clear()
         for i in range(self.SIZE):
             for j in range(self.SIZE):
                 if to_clear[i][j] == 1:
                     self.matrix_of_colors[i][j] = WHITE
+                    s += 1
+        return s
 
     def fall(self, screen):
         w = round(self.width / self.SIZE)
-        h = round(self.height / self.SIZE)
+        h = round((self.height - self.top_hollow) / self.SIZE)
         list_of_whites = []
         for j in range(self.SIZE):
             for i in range(self.SIZE):
                 if self.matrix_of_colors[i][j] == WHITE:
-                    list_of_whites.append([i,j])
+                    list_of_whites.append([i, j])
         list_of_whites.append([100, 100])
         A = []
         a = list_of_whites[0][0]
@@ -139,14 +144,15 @@ class Board:
                 length = 0
                 a = t[0]
             line = t[1]
-            length+=1
+            length += 1
         for t in range(100):
             for info in A:
-                for j in range (info[1] - info[2] + 1):
+                for j in range(info[1] - info[2] + 1):
                     x = round(info[0] * self.width / self.SIZE)
-                    y = round(j * self.height / self.SIZE)
+                    y = round(self.top_hollow + j * (self.height - self.top_hollow) / self.SIZE)
                     pygame.draw.rect(screen, WHITE, (x + 1, round(y + 50 * info[2] * t / 100), w - 1, h - 1))
-                    pygame.draw.circle(screen, self.matrix_of_colors[info[0]][j], (x + 25 , round(y + 25 + 50*info[2]*(t+1)/100)), 22)
+                    pygame.draw.circle(screen, self.matrix_of_colors[info[0]][j],
+                                       (x + 25, round(y + 25 + 50 * info[2] * (t + 1) / 100)), 22)
             self.draw_init(screen)
             pygame.display.flip()
             pygame.time.wait(3)
@@ -157,7 +163,7 @@ class Board:
                     if self.matrix_of_colors[i][j] == WHITE:
                         self.matrix_of_colors[i][j], self.matrix_of_colors[i][j - 1] = \
                             self.matrix_of_colors[i][j - 1], self.matrix_of_colors[i][j]
-                                                 
+
     def fill(self):
         whites = []
         for i in range(self.SIZE):
@@ -172,11 +178,11 @@ class Board:
 
     def swap(self, screen, x1, y1, x2, y2):
         x_coord1 = round(x1 * self.width / self.SIZE)
-        y_coord1 = round(y1 * self.height / self.SIZE)
+        y_coord1 = round(self.top_hollow + y1 * (self.height - self.top_hollow) / self.SIZE)
         x_coord2 = round(x2 * self.width / self.SIZE)
-        y_coord2 = round(y2 * self.height / self.SIZE)
+        y_coord2 = round(self.top_hollow + y2 * (self.height - self.top_hollow) / self.SIZE)
         w = round(self.width / self.SIZE)
-        h = round(self.height / self.SIZE)
+        h = round((self.height - self.top_hollow) / self.SIZE)
         for i in range(100):
             self.draw_init(screen)
             pygame.draw.rect(screen, WHITE, (x_coord1 + 1, y_coord1 + 1, w - 1, h - 1))
@@ -194,4 +200,3 @@ class Board:
 
 if __name__ == "__main__":
     print("This module is not for direct call!")
-
