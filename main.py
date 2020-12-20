@@ -118,6 +118,7 @@ while running and (initial_screen or game or game_over):
                                     pygame.draw.rect(screen, WHITE, (250, 0, 250, 70))
                                     moves_text = FONT.render('Moves: ' + str(moves), 1, BLACK)
                                     screen.blit(moves_text, MOVES_TEXT_POSITION)
+
                                     board.swap(screen, round(x_selected), round(y_selected), round(x2), round(y2))
                                     score += board.boom(screen)
                                     board.fall(screen)

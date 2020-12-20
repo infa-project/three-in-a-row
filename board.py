@@ -128,32 +128,41 @@ class Board:
     def fall(self, screen):
         w = round(self.width / self.SIZE)
         h = round((self.height - self.top_hollow) / self.SIZE)
-        list_of_whites = []
+        list_of_whites = [[0 for _ in range(self.SIZE)] for _ in range(self.SIZE)]
         for j in range(self.SIZE):
             for i in range(self.SIZE):
                 if self.matrix_of_colors[i][j] == WHITE:
-                    list_of_whites.append([i, j])
-        list_of_whites.append([100, 100])
-        A = []
-        a = list_of_whites[0][0]
-        line = 0
-        length = 0
-        for t in list_of_whites:
-            if t[0] != a:
-                A.append([a, line, length])
-                length = 0
-                a = t[0]
-            line = t[1]
-            length += 1
+                    list_of_whites[i][j] = 1
+        cells_to_fall = [[0 for _ in range(self.SIZE)] for _ in range(self.SIZE)]
+        for i in range(self.SIZE):
+            counter = 0
+            # higher_than_whites = False
+            highers = []
+            for j in range(self.SIZE - 1, -1, -1):
+                if list_of_whites[i][j] == 1:
+                    counter += 1
+                    # higher_than_whites = False
+                if list_of_whites[i][j] == 0:
+                    cells_to_fall[i][j] = counter
+            # for j in highers:
+            #     cells_to_fall[i][j] = counter
+
         for t in range(100):
-            for info in A:
-                for j in range(info[1] - info[2] + 1):
-                    x = round(info[0] * self.width / self.SIZE)
-                    y = round(self.top_hollow + j * (self.height - self.top_hollow) / self.SIZE)
-                    pygame.draw.rect(screen, WHITE, (x + 1, round(y + 50 * info[2] * t / 100), w - 1, h - 1))
-                    pygame.draw.circle(screen, self.matrix_of_colors[info[0]][j],
-                                       (x + 25, round(y + 25 + 50 * info[2] * (t + 1) / 100)), 22)
             self.draw_init(screen)
+            for i in range(self.SIZE):
+                for j in range(self.SIZE):
+                    if list_of_whites[i][j] == 1 or cells_to_fall[i][j] > 0:
+                        x = round(i * self.width / self.SIZE)
+                        y = round(self.top_hollow + j * (self.height - self.top_hollow) / self.SIZE)
+                        pygame.draw.rect(screen, WHITE, (x + 1, y + 1, w - 1, h - 1))
+            for i in range(self.SIZE):
+                for j in range(self.SIZE):
+                    if cells_to_fall[i][j] > 0:
+                        x = round(i * self.width / self.SIZE)
+                        y = round(self.top_hollow + j * (self.height - self.top_hollow) / self.SIZE)
+                        pygame.draw.circle(screen, self.matrix_of_colors[i][j],
+                                           (x + w // 2, round(y + w // 2 + w * cells_to_fall[i][j] * (t + 1) / 100)),
+                                           round(0.9 * w // 2))
             pygame.display.flip()
             pygame.time.wait(3)
 
